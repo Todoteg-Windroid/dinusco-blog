@@ -20,7 +20,7 @@ public class ArticleServiceImpl extends CRUDServiceImpl<Article, Long> implement
 	}
     @Override
     public Article findBySlug(String id) {
-    	return repository.findBy(id);
+    	return repository.findBySlug(id);
     }
 	public void createArticle(Article article) {
 		String content = article.getContentFull();

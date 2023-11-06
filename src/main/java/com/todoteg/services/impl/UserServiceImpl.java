@@ -1,7 +1,6 @@
 package com.todoteg.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -26,16 +25,12 @@ public class UserServiceImpl extends CRUDServiceImpl<User, Long> implements IUse
 	@Override
 	public void save(User user) throws Exception {
 		
-		try {
-			repository.findByUsername(user.getUsername());
-			throw new Exception("User found: " + user.getUsername());
+		User userDB = repository.findByUsername(user.getUsername());
+		if (userDB != null) {
+			throw new Exception("The username has already been used " + user.getUsername());
 			
-		}catch(EmptyResultDataAccessException e) {
-			repository.save(user);
 		}
-		
-		
-		
+		repository.save(user);
 	}
 
 	@Override

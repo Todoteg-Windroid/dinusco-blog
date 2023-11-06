@@ -50,8 +50,6 @@ public class UserController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-    	
     	return "forward:/login";
     }
     
@@ -61,6 +59,4 @@ public class UserController {
         model.addAttribute("user", user);
         return "user";
     }
-    
-    // Otros métodos para crear, editar y eliminar artículos
 }
