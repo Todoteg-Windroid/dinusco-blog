@@ -1,12 +1,11 @@
 package com.todoteg.repositories.impl;
 
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -18,10 +17,13 @@ public abstract class CRUDRepoImpl<T,ID> implements ICRUDRepo<T, ID>  {
 	protected final JdbcTemplate jdbcTemplate;
 
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	
+	private final RowMapper<T> rowMapper;
 
-    public CRUDRepoImpl(JdbcTemplate jdbcTemplate) {
+    public CRUDRepoImpl(JdbcTemplate jdbcTemplate, RowMapper<T> rowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+		this.rowMapper = rowMapper;
     }
     
     protected abstract String getTableName();
@@ -34,14 +36,11 @@ public abstract class CRUDRepoImpl<T,ID> implements ICRUDRepo<T, ID>  {
         return "SELECT * FROM " + getTableName() + " WHERE id = :id";
     }
     
-    protected abstract T mapRowToEntity(ResultSet resultSet, int rowNum) throws SQLException;
-
-
     @Override
     public List<T> findAll() {
     	try {
     	String query = generateSelectAllSql();
-	    	return jdbcTemplate.query(query, this::mapRowToEntity);
+	    	return jdbcTemplate.query(query, rowMapper);
 	    }catch (EmptyResultDataAccessException ex) {
 	        return null;
 	    }
@@ -59,7 +58,7 @@ public abstract class CRUDRepoImpl<T,ID> implements ICRUDRepo<T, ID>  {
 
         MapSqlParameterSource parameters = new MapSqlParameterSource("id", param);
     	try {
-    		return namedParameterJdbcTemplate.queryForObject(query, parameters, this::mapRowToEntity);	
+    		return namedParameterJdbcTemplate.queryForObject(query, parameters, rowMapper);	
     	}catch (EmptyResultDataAccessException ex) {
             return null;
         }
@@ -118,7 +117,7 @@ public abstract class CRUDRepoImpl<T,ID> implements ICRUDRepo<T, ID>  {
                 Object value = field.get(entity);
                 if (value != null) {
                     // Agregar el nombre del campo y su valor a la parte SET de la consulta SQL
-                    setSql.append(fieldName).append(" = :").append(fieldName).append(", ");
+                    setSql.append(camelToSnake(fieldName)).append(" = :").append(fieldName).append(", ");
                     parameters.addValue(fieldName, value);
                 }
             } catch (IllegalAccessException e) {

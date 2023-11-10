@@ -1,17 +1,19 @@
 package com.todoteg.repositories.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.todoteg.models.Tag;
+
 import com.todoteg.repositories.ITagRepo;
 
 public class TagRepoImpl extends CRUDRepoImpl<Tag,Long> implements ITagRepo {
 
+	private final static BeanPropertyRowMapper<Tag> rowMapper = BeanPropertyRowMapper.newInstance(Tag.class);
+
 	public TagRepoImpl(JdbcTemplate jdbcTemplate) {
-		super(jdbcTemplate);
+		super(jdbcTemplate, rowMapper);
+		
 	}
 
 	@Override
@@ -19,12 +21,6 @@ public class TagRepoImpl extends CRUDRepoImpl<Tag,Long> implements ITagRepo {
 		return "tags";
 	}
 
-	@Override
-	protected Tag mapRowToEntity(ResultSet resultSet, int rowNum) throws SQLException {
-		return Tag.builder()
-        		.id(resultSet.getLong("id"))
-        		.name(resultSet.getString("name"))
-        		.build();
-	}
+
 
 }
