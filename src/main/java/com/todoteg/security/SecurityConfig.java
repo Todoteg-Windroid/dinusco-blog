@@ -32,7 +32,7 @@ public class SecurityConfig {
         return http
         		.authorizeHttpRequests(authRequest ->
                 authRequest
-                  .requestMatchers(mvcMatcherBuilder.pattern("/createArticle")).authenticated()
+                  .requestMatchers(mvcMatcherBuilder.pattern("/articles/create")).authenticated()
                   .anyRequest().permitAll()
                   )
         		.formLogin(form->form.loginPage("/login").permitAll().loginProcessingUrl("/login").defaultSuccessUrl("/articles"))
