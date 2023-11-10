@@ -1,5 +1,7 @@
 package com.todoteg.services.impl;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,24 +24,27 @@ public class ArticleServiceImpl extends CRUDServiceImpl<Article, Long> implement
     public Article findBySlug(String id) {
     	return repository.findBySlug(id);
     }
+	@Override
+	public void editArticle(Article article) {
+		article = setSlug(article);
+		repository.update(article);
+		
+	}
+	@Override
 	public void createArticle(Article article) {
-		String content = article.getContentFull();
-		int previewMaxLength = 480;
-		int summaryMaxLength = 160;
-		String textWithoutHtml = content.replaceAll("<[^>]+>", "");
-        String contentPreview = generatePreview(content, previewMaxLength);
-        String summary = generatePreview(textWithoutHtml, summaryMaxLength);
-        String slug = generateSlug(article.getTitle());
-        
-        article.setContentPreview(contentPreview);
-        article.setSummary(summary);
-        article.setSlug(slug);
-        
-
+		article.setCreateDate(LocalDateTime.now());
+		article = setSlug(article);
         repository.save(article);
     }
+	
+	public Article setSlug(Article article) {
+        String slug = generateSlug(article.getTitle());
+        article.setSlug(slug);
+        
+        return article;
+	}
     
-	 public String generateSlug(String title) {
+	public String generateSlug(String title) {
 	        if (title == null) {
 	            return "";
 	        }
@@ -47,13 +52,5 @@ public class ArticleServiceImpl extends CRUDServiceImpl<Article, Long> implement
 	        String slug = cleanedTitle.replaceAll("\\s+", "-");
 	        return slug.toLowerCase();
 	    }
-	
-    public String generatePreview(String content, int maxLength) {
-        if (content.length() <= maxLength) {
-            return content; 
-        } else {
-            return content.substring(0, maxLength) + "...";
-        }
-    }
 
 }
