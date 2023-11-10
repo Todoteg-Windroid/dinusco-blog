@@ -72,6 +72,7 @@ footer {
 /* Estilos adicionales según sea necesario */
 
                 </style>
+                <link href="https://cdn.quilljs.com/1.3.7/quill.bubble.css" rel="stylesheet">
             </head>
 
             <body>
@@ -97,33 +98,40 @@ footer {
                 </div>
 
                 <header>
-                    <h1>${article.title}</h1>
-                    <p>Autor: ${article.authorUsername}</p>
-                    <p>Fecha de Publicación: ${article.createDate}</p>
+                    <h1>${title}</h1>
+                    <p>Autor: ${author}</p>
+                    <p>Fecha de Publicación: ${createDate}</p>
                 </header>
 
                 <article>
-                    <div class="article-content">
-                        <sec:authorize access="isAuthenticated()">
-                            ${article.contentFull}
-                        </sec:authorize>
-                        <sec:authorize access="!isAuthenticated()">
-                            ${article.contentPreview}
-                            <div class="access-overlay">
-                                <div class="access-notice">
-                                    <p>Para acceder al artículo completo, debes registrarte o iniciar sesión.</p>
-                                    <a href="/login">Registro/Login</a>
-                                </div>
+                    <div class="article-content" id="article-content"></div>
+                    <sec:authorize access="!isAuthenticated()">
+                        <div class="access-overlay">
+                            <div class="access-notice">
+                                <p>Para acceder al artículo completo, debes registrarte o iniciar sesión.</p>
+                                <a href="/login">Registro/Login</a>
                             </div>
-                        </sec:authorize>  
-                    </div>
+                        </div>
+                    </sec:authorize>  
                 </article>
 
 
                 <footer>
                     <p>© 2023 Nombre de tu Sitio Web</p>
                 </footer>
+            <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+            <script>
+                var quill = new Quill('#article-content', {
+                    theme: 'bubble',
+                    readOnly: true
+                });
+                //var isAuthenticated = '<sec:authorize access="isAuthenticated()">true</sec:authorize>';
+                let content= `${content}`;
+                console.log(content)
+                console.log(JSON.parse(content))
+                quill.setContents(JSON.parse(content));
 
+            </script>
             </body>
 
             </html>

@@ -1,5 +1,5 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-
+<%@ page import="com.fasterxml.jackson.databind.JsonNode" %>
     <!DOCTYPE html>
     <html>
 
@@ -10,7 +10,7 @@
                 font-family: Arial, sans-serif;
             }
 
-            .editor {
+            .container {
                 width: 80%;
                 max-width: 800px;
                 margin: 20px auto;
@@ -88,10 +88,13 @@
                 background-color: #313151;
             }
         </style>
+        <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+
     </head>
 
     <body>
-        <div class="editor">
+        <div class="container">
             <form:form modelAttribute="article" role="form" autocomplete="off" accept-charset="UTF-8" id="editorForm">
                 <!-- 
                 <div class="form-group">
@@ -104,90 +107,142 @@
                     <form:label path="title">
                         Post title
                     </form:label>
-                    <form:input path="title" class="form-control" autocomplete="off" placeholder="title" />
+                    <form:input path="title" class="form-control" autocomplete="off" placeholder="title"
+                        value="${title}" />
                 </div>
                 <div class="form-group">
                     <form:input path="contentFull" id="contentFull" type="hidden" class="form-control"
-                        autocomplete="off" />
-
-                    <div class="toolbar">
-                        <button type="button" id="boldButton"><b>B</b></button>
-                        <button type="button" id="italicButton"><i>I</i></button>
-                        <button type="button" id="underlineButton"><u>U</u></button>
-                        <button type="button" id="listButton">List</button>
-                        <button type="button" id="linkButton">Link</button>
-                        <button type="button" id="imageButton">Imagen</button>
-                        <button type="button" id="fontSizeButton">Tamaño de Fuente</button>
-                        <button type="button" id="fontFamilyButton">Fuente</button>
-                        <button type="button" id="indentButton">Tabular</button>
-                        <select id="listTypeSelect">
-                            <option value="unordered">Lista Desordenada</option>
-                            <option value="ordered">Lista Ordenada</option>
-                        </select>
-                    </div>
-                    <div id="editor" class="editor-content" contenteditable="true"></div>
+                        autocomplete="off"/>
+                    <div id="editor" class="editor-content"></div>
                 </div>
 
                 <button type="submit" class="btn btn-default">
                     create
                 </button>
             </form:form>
-        </div>
 
+        </div>
+        <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
         <script>
-            function toggleFormat(command, value) {
-                document.execCommand(command, false, value);
+            const editor = document.getElementById("editor");
+
+            // Define el formato personalizado "more"
+            var Inline = Quill.import('blots/inline');
+            class MoreBlot extends Inline {
+                static formats(domNode) {
+                    return true;
+                }
+
+            }
+            MoreBlot.blotName = 'more';
+            MoreBlot.tagName = 'span';
+            Quill.register(MoreBlot);
+
+            var quill = new Quill(editor, {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                        ['blockquote', 'code-block'],
+
+                        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+                        [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+                        [{ 'direction': 'rtl' }],                         // text direction
+
+                        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+                        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['link', 'image'],
+                        ['clean'],                                         // remove formatting button
+                        ['more'],
+
+                    ],
+                    imageResize: {
+                        displaySize: true,
+                    }
+                }
+            });
+
+            let toolbar = quill.getModule('toolbar');
+            let btnMore = toolbar.controls[24][1];
+            btnMore.innerHTML = "<i class='fas fa-icono'>More</i>";
+            var insertedMore = false; // Variable para controlar si '[MORE]' se ha insertado
+
+            // Agrega un controlador para el botón personalizado "more"
+            toolbar.quill.getModule('toolbar').addHandler('more', function () {
+                var delta = quill.getContents();
+                var cursorPosition = quill.getSelection().index;
+
+                var index = delta.ops.findIndex(op => op.insert === "[MORE]");
+
+                console.log(index)
+
+                if (index >= 0) {
+                    quill.setContents(delta.ops.filter(op => op.insert !== "[MORE]"))
+                    quill.setSelection(quill.getLength());
+                    //quill.setSelection(cursorPosition - "[MORE]".length)
+                   // quill.updateContents({ ops: [ { retain: cursorPosition, },{ delete: "[MORE]".length }] })
+                    //console.log(quill.updateContents({ ops: [{ retain: index, delete: "[MORE]".length }] }))
+                    //quill.updateContents({ ops: [{ retain: ++index, delete: "[MORE]".length }] });
+                    insertedMore = false; // Marca que '[MORE]' se ha eliminado
+                } else {
+                    // Si '[MORE]' no está presente, insértalo como un marcador
+                    
+                   //quill.setContents(delta.ops.concat({ insert: '[MORE]', attributes: { more: true } }));
+                   //quill.updateContents(new Delta().retain(cursorPosition).insert('[MORE]')).concat(delta)
+                    quill.updateContents({ ops: [ { retain: cursorPosition + 1 },
+                                                  { insert: '[MORE]', attributes: { more: true } }
+                                                 ]})
+                                                 // Insertar un salto de línea después de [MORE]
+                    quill.insertText(quill.getLength(), '\n', 'user');
+
+                    //quill.setSelection(++cursorPosition + "[MORE]".length)
+                    quill.setSelection(quill.getLength());
+                    insertedMore = true; // Marca que '[MORE]' se ha insertado
+                }
+
+
+                console.log(quill.getContents())
+
+            });
+
+            
+
+            const form = document.getElementById("editorForm");
+            const inputContent = document.getElementById("contentFull");
+            
+            // Asigna el contenido inicial a Quill si existe
+            var content = "${content}"; // Obtén el contenido del modelo
+            if (content) {
+                try {
+                    quill.setContents(JSON.parse(content));
+                } catch (error) {
+                    console.error("Error parsing JSON:", error);
+                }
             }
 
-            document.getElementById("boldButton").addEventListener("click", () => toggleFormat("bold"));
-            document.getElementById("italicButton").addEventListener("click", () => toggleFormat("italic"));
-            document.getElementById("underlineButton").addEventListener("click", () => toggleFormat("underline"));
-            document.getElementById("listButton").addEventListener("click", () => {
-                const listType = document.getElementById("listTypeSelect").value;
-                toggleFormat(listType === "unordered" ? "insertUnorderedList" : "insertOrderedList");
-            });
-            document.getElementById("linkButton").addEventListener("click", () => {
-                const url = prompt("Insertar URL:");
-                if (url) {
-                    toggleFormat("createLink", url);
-                }
-            });
-            document.getElementById("imageButton").addEventListener("click", () => {
-                const url = prompt("Insertar URL de la imagen:");
-                if (url) {
-                    toggleFormat("insertImage", url);
-                }
-            });
-
-            document.getElementById("fontSizeButton").addEventListener("click", () => {
-                const fontSize = prompt("Tamaño de Fuente (ejemplo: 16px):");
-                if (fontSize) {
-                    toggleFormat("fontSize", fontSize);
-                }
-            });
-
-            document.getElementById("fontFamilyButton").addEventListener("click", () => {
-                const fontFamily = prompt("Nombre de Fuente (ejemplo: Arial):");
-                if (fontFamily) {
-                    toggleFormat("fontName", fontFamily);
-                }
-            });
-
-            document.getElementById("indentButton").addEventListener("click", () => {
-                toggleFormat("indent");
-            });
-
-
-            const inputContent = document.getElementById("contentFull");
-            const editor = document.getElementById("editor");
-            const form = document.getElementById("editorForm");
-
             form.addEventListener("submit", (event) => {
+                // Evita que el formulario se envíe inmediatamente (puedes ajustar según sea necesario)
+                event.preventDefault();
 
-                inputContent.value = editor.innerHTML;
+                // Obtén el contenido de Quill como un objeto Delta
+                var contentQuill = quill.getContents();
+
+                // Convierte el objeto Delta a una cadena JSON
+                var contentJSON = JSON.stringify(contentQuill);
+
+                // Asigna la cadena JSON al campo oculto
+                inputContent.value = contentJSON;
+
+                // Envía el formulario manualmente si es necesario
+                form.submit();
             });
-
-
 
         </script>
     </body>

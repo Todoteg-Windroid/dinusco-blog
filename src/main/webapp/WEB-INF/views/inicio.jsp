@@ -42,7 +42,7 @@
             <div>
               ${article.summary}
             </div>
-
+            <a href="articles/edit/${article.id}" style="float:right">Edit</a>
             <a href="articles/${article.slug}" style="float:right">read more</a>
           </div>
         </c:forEach>
