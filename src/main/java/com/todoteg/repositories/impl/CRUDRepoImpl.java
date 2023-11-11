@@ -137,10 +137,10 @@ public abstract class CRUDRepoImpl<T,ID> implements ICRUDRepo<T, ID>  {
     }
 
     @Override
-    public void delete(ID id) {
+    public int delete(ID id) {
     	String query = "DELETE FROM " + getTableName() + " WHERE id = :id";
         MapSqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        namedParameterJdbcTemplate.update(query, parameters);
+        return namedParameterJdbcTemplate.update(query, parameters);
     }
     
     public static String camelToSnake(String str){

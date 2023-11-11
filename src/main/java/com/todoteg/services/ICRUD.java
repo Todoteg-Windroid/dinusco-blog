@@ -8,5 +8,5 @@ public interface ICRUD<T,ID> {
     T findById(ID id);
     void save(T t) throws Exception;
     void update(T t);
-    void delete(ID id);
+    boolean delete(ID id);
 }

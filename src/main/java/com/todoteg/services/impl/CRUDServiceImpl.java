@@ -34,8 +34,12 @@ public abstract  class CRUDServiceImpl<T,ID> implements ICRUD<T, ID>  {
 	}
 
 	@Override
-	public void delete(ID id) {
-		getRepo().delete(id);
+	public boolean delete(ID id) {
+		int rowAffected = getRepo().delete(id);
+		if(rowAffected == 1) {
+			return true;
+		}
+		return false;
 	}
 
 }

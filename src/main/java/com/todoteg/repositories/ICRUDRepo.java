@@ -9,5 +9,5 @@ public interface ICRUDRepo<T,ID> {
     T findById(ID id);
     void save(T t) throws SQLException;
     void update(T t);
-    void delete(ID id);
+    int delete(ID id);
 }
