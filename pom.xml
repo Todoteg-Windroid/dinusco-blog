@@ -38,6 +38,11 @@
 		    <artifactId>commons-text</artifactId>
 		    <version>1.9</version> <!-- Utiliza la versión más reciente disponible -->
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    </dependency>
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
 		    <artifactId>jackson-databind</artifactId>

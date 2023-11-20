@@ -66,7 +66,7 @@ public class DashboardController {
     
     @PostMapping("/create")
     public String createArticle(@ModelAttribute Article article, Principal principal ) {
-    	SecurityUser user = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();;
+    	SecurityUser user = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     	Long author = user.getId();
     	article.setAuthor(author);
     	articleService.createArticle(article);

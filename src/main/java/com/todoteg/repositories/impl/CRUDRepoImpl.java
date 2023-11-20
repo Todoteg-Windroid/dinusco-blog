@@ -6,8 +6,12 @@ import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
+import org.springframework.util.Assert;
 
 import com.todoteg.repositories.ICRUDRepo;
 
@@ -16,14 +20,21 @@ public abstract class CRUDRepoImpl<T,ID> implements ICRUDRepo<T, ID>  {
 
 	protected final JdbcTemplate jdbcTemplate;
 
-	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	protected final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	
+	protected final SimpleJdbcInsertOperations simpleJdbcInsert;
 	
 	private final RowMapper<T> rowMapper;
 
     public CRUDRepoImpl(JdbcTemplate jdbcTemplate, RowMapper<T> rowMapper) {
+    	Assert.notNull(jdbcTemplate, "NamedParameterJdbcTemplate must not be null");
+        Assert.notNull(rowMapper, "RowMapper must not be null");
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
 		this.rowMapper = rowMapper;
+		this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(getTableName())
+                .usingGeneratedKeyColumns("id"); // Assuming "id" is the generated key column
     }
     
     protected abstract String getTableName();
@@ -65,39 +76,14 @@ public abstract class CRUDRepoImpl<T,ID> implements ICRUDRepo<T, ID>  {
     }
 
     @Override
-    public void save(T entity) {
-        String tableName = getTableName();
-        Field[] fields = entity.getClass().getDeclaredFields();
-
-        StringBuilder insertSql = new StringBuilder("INSERT INTO " + tableName + " (");
-        StringBuilder valuesSql = new StringBuilder("VALUES (");
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-
-        for (Field field : fields) {
-            field.setAccessible(true);
-            String fieldName = field.getName();
-
-            try {
-                Object value = field.get(entity);
-
-                if (value != null) {
-                    insertSql.append(camelToSnake(fieldName)).append(", ");
-                    valuesSql.append(":").append(fieldName).append(", ");
-                    parameters.addValue(fieldName, value);
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Error al acceder al campo: " + fieldName, e);
-            }
+    public Number save(T entity) {
+    	BeanPropertySqlParameterSource beanParams = new BeanPropertySqlParameterSource(entity);
+    	//MapSqlParameterSource params = new MapSqlParameterSource();
+        Number newId = simpleJdbcInsert.executeAndReturnKey(beanParams);
+        if (newId != null) {
+            return newId;
         }
-        if (parameters.getValues().isEmpty()) {
-            throw new IllegalArgumentException("No se proporcionaron valores para insertar.");
-        }
-        insertSql.setLength(insertSql.length() - 2);
-        valuesSql.setLength(valuesSql.length() - 2);
-        insertSql.append(") ").append(valuesSql).append(")");
-        
-        namedParameterJdbcTemplate.update(insertSql.toString(), parameters);
-
+        return null;
     }
 
     @Override

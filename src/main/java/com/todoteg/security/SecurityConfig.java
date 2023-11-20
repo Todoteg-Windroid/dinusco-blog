@@ -32,10 +32,11 @@ public class SecurityConfig {
         return http
         		.authorizeHttpRequests(authRequest ->
                 authRequest
-                  .requestMatchers(mvcMatcherBuilder.pattern("/dashboard/**")).authenticated()
+                  .requestMatchers(mvcMatcherBuilder.pattern("/dashboard/users")).hasRole("ADMIN")
+                  .requestMatchers(mvcMatcherBuilder.pattern("/dashboard/**")).hasAnyRole("ADMIN", "EDITOR")
                   .anyRequest().permitAll()
                   )
-        		.formLogin(form->form.loginPage("/login").permitAll().loginProcessingUrl("/login").defaultSuccessUrl("/articles"))
+        		.formLogin(form->form.loginPage("/login").permitAll().loginProcessingUrl("/login").defaultSuccessUrl("/articles/list"))
         		.csrf(csrf->csrf.disable())
         		.logout(out ->
                 out.logoutRequestMatcher(mvcMatcherBuilder.pattern("/logout"))

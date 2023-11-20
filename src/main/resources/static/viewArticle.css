@@ -1,0 +1,60 @@
+body {
+	font-family: Arial, sans-serif;
+	background-color: #f0f0f0;
+	margin: 0;
+	padding: 0;
+}
+
+header {
+	background-color: #000000;
+	color: #fff;
+	text-align: center;
+	padding: 20px 0;
+}
+
+article {
+	background-color: #fff;
+	max-width: 80%;
+	margin: 20px auto;
+	padding: 20px;
+	min-height: 20vh;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	position: relative;
+}
+
+footer {
+	text-align: center;
+	padding: 10px 0;
+	background-color: #3f51b5;
+	color: #fff;
+	bottom: 0;
+}
+
+/* Estilos del aviso */
+.access-notice {
+	background-color: #000000cc;
+	color: #fff;
+	/* Cambiar el color del texto según tus preferencias */
+	text-align: center;
+	padding: 10px;
+	border-radius: 5px;
+	position: absolute;
+	bottom: -25px;
+	/* Ajustar la distancia desde la parte inferior del artículo */
+	left: 50%;
+	transform: translateX(-50%);
+	/* Centrar horizontalmente */
+}
+
+.access-notice p {
+	font-size: 16px;
+	margin-bottom: 5px;
+}
+
+.access-notice a {
+	color: #fff;
+	text-decoration: underline;
+	margin: 0 10px;
+}

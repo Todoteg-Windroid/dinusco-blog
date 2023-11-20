@@ -100,7 +100,7 @@ public class ArticleRowMapper implements RowMapper<Article>{
         previewResult.set("ops", firstPart);
         return previewResult;
     }
-	private JsonNode parseContentOps(String content) {
+	public JsonNode parseContentOps(String content) {
 	    try {
 	        return objectMapper.readTree(content);
 	    } catch (IOException e) {

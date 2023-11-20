@@ -7,7 +7,7 @@ public interface ICRUDRepo<T,ID> {
 	
 	List<T> findAll();
     T findById(ID id);
-    void save(T t) throws SQLException;
+    Number save(T t) throws SQLException;
     void update(T t);
     int delete(ID id);
 }

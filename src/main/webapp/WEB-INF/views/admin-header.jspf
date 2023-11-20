@@ -49,12 +49,9 @@
     <rect x="9" y="9" width="7" height="7" />
   </symbol>
   <symbol id="charts" viewBox="0 0 16 16">
-    <polygon
-      points="0.64 7.38 -0.02 6.63 2.55 4.38 4.57 5.93 9.25 0.78 12.97 4.37 15.37 2.31 16.02 3.07 12.94 5.72 9.29 2.21 4.69 7.29 2.59 5.67 0.64 7.38" />
-    <rect y="9" width="2" height="7" />
-    <rect x="12" y="8" width="2" height="8" />
-    <rect x="8" y="6" width="2" height="10" />
-    <rect x="4" y="11" width="2" height="5" />
+    <g id="surface1">
+    <path style=" stroke:none;fill-rule:evenodd;fill:rgb(86.666667%,91.372549%,97.254902%);fill-opacity:1;" d="M 8 0 C 12.417969 0 16 3.582031 16 8 C 16 12.417969 12.417969 16 8 16 C 3.582031 16 0 12.417969 0 8 C 0 3.582031 3.582031 0 8 0 Z M 8.550781 11.773438 L 10.152344 11.773438 C 10.761719 11.773438 11.257812 11.277344 11.257812 10.664062 L 11.257812 9.4375 C 11.257812 9.238281 11.09375 9.074219 10.894531 9.074219 C 10.695312 9.074219 10.53125 9.238281 10.53125 9.4375 L 10.53125 10.664062 C 10.53125 10.875 10.359375 11.046875 10.152344 11.046875 L 8.550781 11.046875 L 8.550781 6.1875 C 8.550781 5.78125 8.351562 5.429688 8 5.226562 L 5.808594 3.960938 L 10.152344 3.960938 C 10.359375 3.960938 10.53125 4.132812 10.53125 4.34375 L 10.53125 5.742188 C 10.53125 5.941406 10.695312 6.105469 10.894531 6.105469 C 11.09375 6.105469 11.257812 5.941406 11.257812 5.742188 L 11.257812 4.34375 C 11.257812 3.730469 10.761719 3.234375 10.152344 3.234375 L 5.195312 3.234375 C 4.582031 3.234375 4.085938 3.730469 4.085938 4.34375 L 4.085938 10.980469 C 4.085938 11.386719 4.289062 11.734375 4.640625 11.9375 L 6.890625 13.238281 C 7.058594 13.335938 7.25 13.390625 7.445312 13.390625 C 7.640625 13.390625 7.828125 13.335938 8 13.238281 C 8.351562 13.035156 8.550781 12.683594 8.550781 12.277344 Z M 11.921875 7.867188 L 11.519531 8.269531 C 11.378906 8.410156 11.378906 8.640625 11.519531 8.78125 C 11.589844 8.851562 11.683594 8.886719 11.777344 8.886719 C 11.875 8.886719 11.96875 8.851562 12.035156 8.78125 L 13.058594 7.761719 C 13.199219 7.617188 13.199219 7.390625 13.058594 7.246094 L 12.035156 6.226562 C 11.894531 6.082031 11.664062 6.082031 11.523438 6.226562 C 11.378906 6.367188 11.378906 6.597656 11.523438 6.738281 L 11.921875 7.140625 L 9.238281 7.140625 C 9.039062 7.140625 8.875 7.304688 8.875 7.503906 C 8.875 7.703125 9.039062 7.867188 9.238281 7.867188 Z M 11.921875 7.867188 "/>
+    </g>
   </symbol>
   <symbol id="comments" viewBox="0 0 16 16">
     <path d="M0,16.13V2H15V13H5.24ZM1,3V14.37L5,12h9V3Z" />
@@ -112,22 +109,23 @@
     </button>
     <ul class="admin-menu">
       <li class="menu-heading">
-        <h3>Admin</h3>
+        <h3><spring:message code='menu.admin'/></h3>
       </li>
       <li>
         <a href="/dashboard">
           <svg>
             <use xlink:href="#pages"></use>
           </svg>
-          <span>Pages</span>
+          <span><spring:message code='menu.pages'/></span>
         </a>
       </li>
+      <sec:authorize access="hasRole('ROLE_ADMIN')">
       <li>
         <a href="/dashboard/users">
           <svg>
             <use xlink:href="#users"></use>
           </svg>
-          <span>Users</span>
+          <span><spring:message code='menu.users'/></span>
         </a>
       </li>
       <li>
@@ -135,7 +133,7 @@
           <svg>
             <use xlink:href="#trends"></use>
           </svg>
-          <span>Trends</span>
+          <span><spring:message code='menu.trends'/></span>
         </a>
       </li>
       <li>
@@ -143,15 +141,16 @@
           <svg>
             <use xlink:href="#collection"></use>
           </svg>
-          <span>Collection</span>
+          <span><spring:message code='menu.collection'/></span>
         </a>
       </li>
+      </sec:authorize>
       <li>
         <a href="#0">
           <svg>
             <use xlink:href="#comments"></use>
           </svg>
-          <span>Comments</span>
+          <span><spring:message code='menu.comments'/></span>
         </a>
       </li>
       <li>
@@ -159,18 +158,18 @@
           <svg>
             <use xlink:href="#appearance"></use>
           </svg>
-          <span>Appearance</span>
+          <span><spring:message code='menu.appearance'/></span>
         </a>
       </li>
       <li class="menu-heading">
-        <h3>Settings</h3>
+        <h3><spring:message code='menu.settings'/></h3>
       </li>
       <li>
         <a href="#0">
           <svg>
             <use xlink:href="#settings"></use>
           </svg>
-          <span>Settings</span>
+          <span><spring:message code='menu.settings'/></span>
         </a>
       </li>
       <li>
@@ -178,7 +177,7 @@
           <svg>
             <use xlink:href="#options"></use>
           </svg>
-          <span>Options</span>
+          <span><spring:message code='menu.options'/></span>
         </a>
       </li>
       <li>
@@ -186,7 +185,7 @@
           <svg>
             <use xlink:href="#charts"></use>
           </svg>
-          <span>Charts</span>
+          <span><spring:message code='menu.charts'/></span>
         </a>
       </li>
       <li>
@@ -197,11 +196,11 @@
             <span>Dark</span>
           </label>
         </div>
-        <button class="collapse-btn" aria-expanded="true" aria-label="collapse menu">
+        <button class="collapse-btn" aria-expanded="true" aria-label="<spring:message code='menu.collapse'/>">
           <svg aria-hidden="true">
             <use xlink:href="#collapse"></use>
           </svg>
-          <span>Collapse</span>
+          <span><spring:message code='menu.collapse'/></span>
         </button>
       </li>
     </ul>

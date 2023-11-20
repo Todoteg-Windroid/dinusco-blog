@@ -1,7 +1,6 @@
 package com.todoteg.models;
 
 import java.time.LocalDateTime;
-
 import org.postgresql.util.PGobject;
 
 import com.fasterxml.jackson.databind.JsonNode;

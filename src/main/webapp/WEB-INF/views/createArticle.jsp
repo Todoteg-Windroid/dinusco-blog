@@ -110,7 +110,6 @@
                             autocomplete="off" />
                         <div id="editor" class="editor-content" style="height: 62vh;"></div>
                     </div>
-
                     <button type="submit" class="btn btn-default">
                         create
                     </button>
@@ -239,9 +238,33 @@
                     console.log(quill.getContents())
 
                 });
+                let imageList = [];
+                quill.getModule('toolbar').addHandler('image', function () {
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+                    input.click();
 
+                    input.onchange = function () {
+                        var file = input.files[0];
+                        var formData = new FormData();
+                        formData.append('image', file);
 
-
+                        fetch('/upload', {
+                            method: 'POST',
+                            body: formData,
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                var cursorPosition = quill.getSelection().index;
+                                quill.insertEmbed(cursorPosition, 'image', data.imageUrl);
+                                imageList.push(data.imageUrl);
+                            })
+                            .catch(error => {
+                                console.error('Error al cargar la imagen:', error);
+                            });
+                    };
+                });
                 const form = document.getElementById("editorForm");
                 const inputContent = document.getElementById("contentFull");
 
@@ -264,7 +287,6 @@
 
                     // Convierte el objeto Delta a una cadena JSON
                     var contentJSON = JSON.stringify(contentQuill);
-
                     // Asigna la cadena JSON al campo oculto
                     inputContent.value = contentJSON;
 

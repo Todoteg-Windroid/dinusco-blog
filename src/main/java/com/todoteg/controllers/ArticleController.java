@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.todoteg.dto.ArticleDTO;
 import com.todoteg.models.Article;
 import com.todoteg.services.IArticleService;
 
@@ -26,14 +27,29 @@ public class ArticleController {
     
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<Article>> getArticles() {
-        List<Article> articles = articleService.findAll();
+    public ResponseEntity<List<ArticleDTO>> getArticles() {
+        List<ArticleDTO> articles = articleService.findAll().stream().map(article -> {
+        	String urlImage = articleService.findFirstImageArticle(article.getContentFull().getValue());
+        	return ArticleDTO.builder()
+        			.id(article.getId())
+        			.author(article.getAuthor())
+        			.authorUsername(article.getAuthorUsername())
+        			.slug(article.getSlug())
+        			.title(article.getTitle())
+        			.summary(article.getSummary())
+        			.urlFirstImage(urlImage)
+        			.createDate(article.getCreateDate())
+        			.updateDate(article.getUpdateDate())
+        			.build();
+        }).toList();
+
         return new ResponseEntity<>(articles, HttpStatus.OK);
     }
     
     @GetMapping("/list")
-    public String viewArticles() {
-        return "inicio";
+    public String viewArticles(Model model) {
+    	model.addAttribute("view", "ArticleList.jsp");
+        return "blogTemplate";
     }
     
     @GetMapping("/{slug}")
@@ -44,11 +60,12 @@ public class ArticleController {
         	content = article.getContentFull().getValue();
         }
         String escapedContent = StringEscapeUtils.escapeEcmaScript(content);
+        model.addAttribute("view", "viewArticle.jsp");
         model.addAttribute("title", article.getTitle());
         model.addAttribute("author", article.getAuthorUsername());
         model.addAttribute("createDate", article.getCreateDate());
         model.addAttribute("content", escapedContent);
-        return "viewArticle";
+        return "blogTemplate";
     }
    
     

@@ -50,16 +50,16 @@ for (const link of menuLinks) {
 if (localStorage.getItem("dark-mode") === "false") {
   html.classList.add(lightModeClass);
   switchInput.checked = false;
-  switchLabelText.textContent = "Light";
+  switchLabelText.textContent = lightMode;
 }
 
 switchInput.addEventListener("input", function () {
   html.classList.toggle(lightModeClass);
   if (html.classList.contains(lightModeClass)) {
-    switchLabelText.textContent = "Light";
+    switchLabelText.textContent = lightMode;
     localStorage.setItem("dark-mode", "false");
   } else {
-    switchLabelText.textContent = "Dark";
+    switchLabelText.textContent = darkMode;
     localStorage.setItem("dark-mode", "true");
   }
 });
