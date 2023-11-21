@@ -22,10 +22,10 @@
     </div>
     
     <div class="topnav">
-      <a href="list"><spring:message code="navOptionOne"/></a>
-      <a href="#"><spring:message code="navOptionTwo"/></a>
-      <a href="#"><spring:message code="navOptionThree"/></a>
-      <a href="#"><spring:message code="navOptionFour"/></a>
+      <a href="/home"><spring:message code="navOptionOne"/></a>
+      <a href="/articles/list"><spring:message code="navOptionTwo"/></a>
+      <a href="/abaut-us"><spring:message code="navOptionThree"/></a>
+      <a href="/contact"><spring:message code="navOptionFour"/></a>
       <!-- Verificar si el usuario ha iniciado sesión -->
     <sec:authorize access="isAuthenticated()">
       <a href="/logout" style="float:right"><spring:message code="logout"/></a>
